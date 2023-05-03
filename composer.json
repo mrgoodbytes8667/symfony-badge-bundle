@@ -1,0 +1,46 @@
+{
+    "name": "mrgoodbytes8667/symfony-badge-bundle",
+    "type": "symfony-bundle",
+    "description": "A Symfony bundle for testing versions and providing context info",
+    "license": "CC-BY-NC-4.0",
+    "require": {
+        "php": "^8.1",
+        "ext-json": "*",
+        "composer/semver": "^3.3",
+        "doctrine/orm": "^2.8",
+        "mrgoodbytes8667/enum-serializer-bundle": "^4.1",
+        "symfony/framework-bundle": "^6.0",
+        "symfony/http-client": "^6.2",
+        "symfony/http-foundation": "^6.2",
+        "symfony/serializer": "^6.2"
+    },
+    "require-dev": {
+        "doctrine/common": "^3.0",
+        "rector/rector": "^0.13 | ^0.14 | ^0.15",
+        "symfony/test-pack": "^1.0.8",
+        "symfony/var-dumper": "^6.2"
+    },
+    "authors": [
+        {
+            "name": "MrGoodBytes",
+            "email": "bytes@mrgoodbytes.dev"
+        }
+    ],
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "conflict": {
+        "phpunit/phpunit": "<9.5 | 9.5.8 | >=10",
+        "symfony/string": "<6.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bytes\\SymfonyBadge\\": "src/",
+            "Bytes\\SymfonyBadge\\Tests\\": "Tests/"
+        }
+    },
+    "minimum-stability": "dev"
+}
