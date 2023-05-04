@@ -4,6 +4,7 @@ namespace Bytes\SymfonyBadge\Tests\Services;
 
 use Bytes\SymfonyBadge\Enums\Color;
 use Bytes\SymfonyBadge\Enums\Condition;
+use Bytes\SymfonyBadge\Objects\Symfony;
 use Bytes\SymfonyBadge\Services\SymfonySupport;
 use Bytes\SymfonyBadge\Services\Versions;
 use Bytes\SymfonyBadge\Tests\SymfonyTestTrait;
@@ -17,6 +18,32 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 class SymfonySupportTest extends TestCase
 {
     use SymfonyTestTrait;
+
+    private ?SymfonySupport $support = null;
+
+    public static function provideConditions()
+    {
+        yield '^5.2 symfony' => ['condition' => Condition::SYMFONY, 'version' => '^5.2', 'all' => false, 'lts' => true, 'stable' => false, 'dev' => false, 'supports' => true, 'color' => Color::YELLOW];
+        yield '^5.2 symfony test' => ['condition' => Condition::SYMFONY_TEST, 'version' => '^5.2', 'all' => false, 'lts' => true, 'stable' => false, 'dev' => false, 'supports' => true, 'color' => Color::YELLOW];
+        yield '^5.2 lts' => ['condition' => Condition::LTS, 'version' => '^5.2', 'all' => false, 'lts' => true, 'stable' => false, 'dev' => false, 'supports' => true, 'color' => Color::GREEN];
+        yield '^5.2 stable' => ['condition' => Condition::STABLE, 'version' => '^5.2', 'all' => false, 'lts' => true, 'stable' => false, 'dev' => false, 'supports' => false, 'color' => Color::RED];
+        yield '^5.2 dev' => ['condition' => Condition::DEV, 'version' => '^5.2', 'all' => false, 'lts' => true, 'stable' => false, 'dev' => false, 'supports' => false, 'color' => Color::RED];
+        yield '^6.2 symfony' => ['condition' => Condition::SYMFONY, 'version' => '^6.2', 'all' => false, 'lts' => false, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::GREEN];
+        yield '^6.2 symfony test' => ['condition' => Condition::SYMFONY_TEST, 'version' => '^6.2', 'all' => false, 'lts' => false, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::GREEN];
+        yield '^6.2 lts' => ['condition' => Condition::LTS, 'version' => '^6.2', 'all' => false, 'lts' => false, 'stable' => true, 'dev' => true, 'supports' => false, 'color' => Color::RED];
+        yield '^6.2 stable' => ['condition' => Condition::STABLE, 'version' => '^6.2', 'all' => false, 'lts' => false, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::GREEN];
+        yield '^6.2 dev' => ['condition' => Condition::DEV, 'version' => '^6.2', 'all' => false, 'lts' => false, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::GREEN];
+        yield '^5.4 | ^6.0 symfony' => ['condition' => Condition::SYMFONY, 'version' => '^5.4 | ^6.0', 'all' => true, 'lts' => true, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::BRIGHTGREEN];
+        yield '^5.4 | ^6.0 symfony test' => ['condition' => Condition::SYMFONY_TEST, 'version' => '^5.4 | ^6.0', 'all' => true, 'lts' => true, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::BRIGHTGREEN];
+        yield '^5.4 | ^6.0 lts' => ['condition' => Condition::LTS, 'version' => '^5.4 | ^6.0', 'all' => true, 'lts' => true, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::GREEN];
+        yield '^5.4 | ^6.0 stable' => ['condition' => Condition::STABLE, 'version' => '^5.4 | ^6.0', 'all' => true, 'lts' => true, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::GREEN];
+        yield '^5.4 | ^6.0 dev' => ['condition' => Condition::DEV, 'version' => '^5.4 | ^6.0', 'all' => true, 'lts' => true, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::GREEN];
+
+        yield '>=6.2 <6.3 symfony' => ['condition' => Condition::SYMFONY, 'version' => '>=6.2 <6.3', 'all' => false, 'lts' => false, 'stable' => true, 'dev' => false, 'supports' => true, 'color' => Color::YELLOWGREEN];
+        yield '>=5.4 <6.2 symfony' => ['condition' => Condition::SYMFONY, 'version' => '>=5.4 <6.2', 'all' => false, 'lts' => true, 'stable' => false, 'dev' => false, 'supports' => true, 'color' => Color::YELLOW];
+        yield '^6.3 symfony' => ['condition' => Condition::SYMFONY, 'version' => '^6.3', 'all' => false, 'lts' => false, 'stable' => false, 'dev' => true, 'supports' => true, 'color' => Color::ORANGE];
+        yield '<5.0 symfony' => ['condition' => Condition::SYMFONY, 'version' => '<5.0', 'all' => false, 'lts' => false, 'stable' => false, 'dev' => false, 'supports' => false, 'color' => Color::RED];
+    }
 
     /**
      * @return void
@@ -61,7 +88,8 @@ class SymfonySupportTest extends TestCase
      * @param $color
      * @return void
      */
-    public function testGetForCondition($condition, $version, $all, $lts, $stable, $dev, $supports, $color) {
+    public function testGetForCondition($condition, $version, $all, $lts, $stable, $dev, $supports, $color)
+    {
         $output = $this->support->getForCondition($version, $condition);
         self::assertIsArray($output);
         self::assertEquals($all, $output['all']);
@@ -72,27 +100,28 @@ class SymfonySupportTest extends TestCase
         self::assertEquals($color, $output['color']);
     }
 
-    public static function provideConditions() {
-        yield '^5.2 symfony' => ['condition' => Condition::SYMFONY, 'version' => '^5.2', 'all' => false, 'lts' => true, 'stable' => false, 'dev' => false, 'supports' => true, 'color' => Color::YELLOW];
-        yield '^5.2 symfony test' => ['condition' => Condition::SYMFONY_TEST, 'version' => '^5.2', 'all' => false, 'lts' => true, 'stable' => false, 'dev' => false, 'supports' => true, 'color' => Color::YELLOW];
-        yield '^5.2 lts' => ['condition' => Condition::LTS, 'version' => '^5.2', 'all' => false, 'lts' => true, 'stable' => false, 'dev' => false, 'supports' => true, 'color' => Color::GREEN];
-        yield '^5.2 stable' => ['condition' => Condition::STABLE, 'version' => '^5.2', 'all' => false, 'lts' => true, 'stable' => false, 'dev' => false, 'supports' => false, 'color' => Color::RED];
-        yield '^5.2 dev' => ['condition' => Condition::DEV, 'version' => '^5.2', 'all' => false, 'lts' => true, 'stable' => false, 'dev' => false, 'supports' => false, 'color' => Color::RED];
-        yield '^6.2 symfony' => ['condition' => Condition::SYMFONY, 'version' => '^6.2', 'all' => false, 'lts' => false, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::GREEN];
-        yield '^6.2 symfony test' => ['condition' => Condition::SYMFONY_TEST, 'version' => '^6.2', 'all' => false, 'lts' => false, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::GREEN];
-        yield '^6.2 lts' => ['condition' => Condition::LTS, 'version' => '^6.2', 'all' => false, 'lts' => false, 'stable' => true, 'dev' => true, 'supports' => false, 'color' => Color::RED];
-        yield '^6.2 stable' => ['condition' => Condition::STABLE, 'version' => '^6.2', 'all' => false, 'lts' => false, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::GREEN];
-        yield '^6.2 dev' => ['condition' => Condition::DEV, 'version' => '^6.2', 'all' => false, 'lts' => false, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::GREEN];
-        yield '^5.4 | ^6.0 symfony' => ['condition' => Condition::SYMFONY, 'version' => '^5.4 | ^6.0', 'all' => true, 'lts' => true, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::BRIGHTGREEN];
-        yield '^5.4 | ^6.0 symfony test' => ['condition' => Condition::SYMFONY_TEST, 'version' => '^5.4 | ^6.0', 'all' => true, 'lts' => true, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::BRIGHTGREEN];
-        yield '^5.4 | ^6.0 lts' => ['condition' => Condition::LTS, 'version' => '^5.4 | ^6.0', 'all' => true, 'lts' => true, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::GREEN];
-        yield '^5.4 | ^6.0 stable' => ['condition' => Condition::STABLE, 'version' => '^5.4 | ^6.0', 'all' => true, 'lts' => true, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::GREEN];
-        yield '^5.4 | ^6.0 dev' => ['condition' => Condition::DEV, 'version' => '^5.4 | ^6.0', 'all' => true, 'lts' => true, 'stable' => true, 'dev' => true, 'supports' => true, 'color' => Color::GREEN];
+    public function testGetReleases() {
+        $releases = $this->support->getReleases();
+        self::assertInstanceOf(Symfony::class, $releases);
+        self::assertEquals('6.2', $releases->getLatestStableVersion());
+    }
 
-        yield '>=6.2 <6.3 symfony' => ['condition' => Condition::SYMFONY, 'version' => '>=6.2 <6.3', 'all' => false, 'lts' => false, 'stable' => true, 'dev' => false, 'supports' => true, 'color' => Color::YELLOWGREEN];
-        yield '>=5.4 <6.2 symfony' => ['condition' => Condition::SYMFONY, 'version' => '>=5.4 <6.2', 'all' => false, 'lts' => true, 'stable' => false, 'dev' => false, 'supports' => true, 'color' => Color::YELLOW];
-        yield '^6.3 symfony' => ['condition' => Condition::SYMFONY, 'version' => '^6.3', 'all' => false, 'lts' => false, 'stable' => false, 'dev' => true, 'supports' => true, 'color' => Color::ORANGE];
-        yield '<5.0 symfony' => ['condition' => Condition::SYMFONY, 'version' => '<5.0', 'all' => false, 'lts' => false, 'stable' => false, 'dev' => false, 'supports' => false, 'color' => Color::RED];
+    public function testGetNormalizedReleases() {
+        $releases = $this->support->getNormalizedReleases();
+        self::assertInstanceOf(Symfony::class, $releases);
+        self::assertEquals('6.2.0.0', $releases->getLatestStableVersion());
+    }
+
+    public function testGetVersions() {
+        $versions = $this->support->getVersions();
+        self::assertInstanceOf(Versions::class, $versions);
+        $releases = $versions->getReleases();
+        self::assertInstanceOf(Symfony::class, $releases);
+        self::assertEquals('6.2', $releases->getLatestStableVersion());
+
+        $releases = $versions->getNormalizedReleases();
+        self::assertInstanceOf(Symfony::class, $releases);
+        self::assertEquals('6.2.0.0', $releases->getLatestStableVersion());
     }
 
     public function setUp(): void
@@ -108,8 +137,6 @@ class SymfonySupportTest extends TestCase
 
         $this->support = new SymfonySupport($stub);
     }
-
-    private ?SymfonySupport $support = null;
 
     public function tearDown(): void
     {

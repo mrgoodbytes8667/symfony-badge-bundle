@@ -15,6 +15,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 class SymfonySupport
 {
     private ?Symfony $releases = null;
+    private ?Symfony $normalizedReleases = null;
 
     /**
      * @param Versions $versions
@@ -23,9 +24,17 @@ class SymfonySupport
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function __construct(Versions $versions)
+    public function __construct(private Versions $versions)
     {
-        $this->releases = $versions->getNormalizedReleases();
+        $this->normalizedReleases = $versions->getNormalizedReleases();
+    }
+
+    /**
+     * @return Symfony|null
+     */
+    public function getNormalizedReleases(): ?Symfony
+    {
+        return $this->normalizedReleases;
     }
 
     #[ArrayShape(['all' => "bool", 'lts' => "bool", 'stable' => "bool", 'dev' => "bool", 'supports' => "bool", 'color' => Color::class])]
@@ -116,7 +125,7 @@ class SymfonySupport
         // LTS -> yellow
         // None, -> red
 
-        $supportsAll = $this->releases->getSymfonyVersions()->countAll() === count(Semver::satisfiedBy($this->releases->getSymfonyVersions()->getAll(), $ver));
+        $supportsAll = $this->normalizedReleases->getSymfonyVersions()->countAll() === count(Semver::satisfiedBy($this->normalizedReleases->getSymfonyVersions()->getAll(), $ver));
         if ($supportsAll) {
             return [
                 'all' => true,
@@ -126,10 +135,33 @@ class SymfonySupport
             ];
         }
 
-        $return['stable'] = Semver::satisfies($this->releases->getSymfonyVersions()->getStable(), $ver);
-        $return['lts'] = Semver::satisfies($this->releases->getSymfonyVersions()->getLts(), $ver);
-        $return['dev'] = Semver::satisfies($this->releases->getSymfonyVersions()->getNext(), $ver);
+        $return['stable'] = Semver::satisfies($this->normalizedReleases->getSymfonyVersions()->getStable(), $ver);
+        $return['lts'] = Semver::satisfies($this->normalizedReleases->getSymfonyVersions()->getLts(), $ver);
+        $return['dev'] = Semver::satisfies($this->normalizedReleases->getSymfonyVersions()->getNext(), $ver);
 
         return $return;
+    }
+
+    /**
+     * @return Symfony|null
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getReleases(): ?Symfony
+    {
+        if (is_null($this->releases)) {
+            $this->releases = $this->versions->getReleases();
+        }
+        return $this->releases;
+    }
+
+    /**
+     * @return Versions
+     */
+    public function getVersions(): Versions
+    {
+        return $this->versions;
     }
 }
