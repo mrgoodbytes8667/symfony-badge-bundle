@@ -1,2 +1,3 @@
 ignore:
     - "rector.php"
+    - "src/BytesSymfonyBadgeBundle.php"
