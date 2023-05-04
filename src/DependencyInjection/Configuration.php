@@ -21,7 +21,6 @@ class Configuration implements ConfigurationInterface
             ->ignoreExtraKeys()
             ->children()
                 ->scalarNode('cache_path')
-                    ->isRequired()
                     ->cannotBeEmpty()
                     ->info('Fully qualified path to cache')
                     ->defaultValue('%kernel.project_dir%/var/cache/bytes_symfony_badge')
