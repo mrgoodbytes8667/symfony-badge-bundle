@@ -3,6 +3,8 @@
 namespace Bytes\SymfonyBadge\Services;
 
 use Bytes\SymfonyBadge\Objects\Symfony;
+use Symfony\Component\HttpClient\CachingHttpClient;
+use Symfony\Component\HttpKernel\HttpCache\Store;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -12,12 +14,17 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class Versions
 {
+    private HttpClientInterface $client;
+
     /**
-     * @param HttpClientInterface $client
+     * @param HttpClientInterface $httpClient
      * @param SerializerInterface $serializer
+     * @param string $cachePath
      */
-    public function __construct(private HttpClientInterface $client, private SerializerInterface $serializer)
+    public function __construct(HttpClientInterface $httpClient, private SerializerInterface $serializer, string $cachePath)
     {
+        $store = new Store($cachePath);
+        $this->client = new CachingHttpClient($httpClient, $store, ['default_ttl' => 6 * 3600]);
     }
 
     /**

@@ -25,6 +25,7 @@ return static function (ContainerConfigurator $container) {
         ->args([
             service('http_client'),
             service('serializer'),
+            ''
         ])
         ->lazy()
         ->alias(Versions::class, 'bytes_symfony_badge.versions')
