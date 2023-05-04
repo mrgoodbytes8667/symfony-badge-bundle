@@ -26,7 +26,7 @@ trait SymfonyTestTrait
      */
     public function getSymfonyVersions(): SymfonyVersions
     {
-        return SymfonyVersions::create('5.4.22.0', '6.2.9.0', '6.3.0.0-dev');
+        return SymfonyVersions::create('5.4.22', '6.2.9', '6.3.0-dev');
     }
 
     /**
