@@ -35,8 +35,16 @@ class SymfonyVersions
      */
     public function setLts(?string $lts): self
     {
-        $this->lts = static::normalizeVersion($lts);
+        $this->lts = $lts;
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLtsNormalized(): ?string
+    {
+        return static::normalizeVersion($this->getLts());
     }
 
     /**
@@ -62,8 +70,16 @@ class SymfonyVersions
      */
     public function setStable(?string $stable): self
     {
-        $this->stable = static::normalizeVersion($stable);
+        $this->stable = $stable;
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getStableNormalized(): ?string
+    {
+        return static::normalizeVersion($this->getStable());
     }
 
     /**
@@ -80,8 +96,16 @@ class SymfonyVersions
      */
     public function setNext(?string $next): self
     {
-        $this->next = static::normalizeVersion($next);
+        $this->next = $next;
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getNextNormalized(): ?string
+    {
+        return static::normalizeVersion($this->getNext());
     }
 
     /**
