@@ -40,6 +40,13 @@ class Kernel extends BaseKernel
     public function __construct(string $callback = '', array $config = [])
     {
         $this->callback = $callback;
+
+        if(empty($config)) {
+            $config = [
+                'cache_path' => '%kernel.project_dir%/var/cache/bytes_symfony_badge'
+            ];
+        }
+
         $this->config = $config;
 
         parent::__construct('test', true);

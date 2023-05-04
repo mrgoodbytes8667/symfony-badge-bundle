@@ -15,6 +15,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 class SymfonySupport
 {
     private ?Symfony $releases = null;
+    
     private ?Symfony $normalizedReleases = null;
 
     /**
@@ -154,6 +155,7 @@ class SymfonySupport
         if (is_null($this->releases)) {
             $this->releases = $this->versions->getReleases();
         }
+        
         return $this->releases;
     }
 
