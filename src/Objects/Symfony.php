@@ -16,22 +16,32 @@ class Symfony
     /**
      * @var string|null
      */
-    private $latest_stable_version;
+    private ?string $latest_stable_version = null;
 
     /**
      * @var string[]|null
      */
-    private $supported_versions;
+    private ?array $supported_versions = [];
 
     /**
      * @var string[]|null
      */
-    private $maintained_versions;
+    private ?array $maintained_versions = [];
 
     /**
      * @var SymfonyVersions|null
      */
-    private $symfony_versions;
+    private ?SymfonyVersions $symfony_versions = null;
+
+    /**
+     * @var string[]|null
+     */
+    private ?array $security_maintained_versions = [];
+
+    /**
+     * @var string[]|null
+     */
+    private ?array $flex_supported_versions = [];
 
     /**
      * @return string
@@ -108,14 +118,29 @@ class Symfony
         foreach ($this->getSupportedVersions() as $supportedVersion) {
             $supportedVersions[] = $parser->normalize($supportedVersion);
         }
-
+        
         $this->setSupportedVersions($supportedVersions);
+        
         $maintainedVersions = [];
         foreach ($this->getMaintainedVersions() as $supportedVersion) {
             $maintainedVersions[] = $parser->normalize($supportedVersion);
         }
-
+        
         $this->setMaintainedVersions($maintainedVersions);
+
+        $securityMaintainedVersions = [];
+        foreach ($this->getSecurityMaintainedVersions() as $supportedVersion) {
+            $securityMaintainedVersions[] = $parser->normalize($supportedVersion);
+        }
+        
+        $this->setSecurityMaintainedVersions($securityMaintainedVersions);
+
+        $flexSupportedVersions = [];
+        foreach ($this->getFlexSupportedVersions() as $supportedVersion) {
+            $flexSupportedVersions[] = $parser->normalize($supportedVersion);
+        }
+        
+        $this->setFlexSupportedVersions($flexSupportedVersions);
 
         return $this;
     }
@@ -171,6 +196,42 @@ class Symfony
     public function setMaintainedVersions(?array $maintained_versions): self
     {
         $this->maintained_versions = $maintained_versions;
+        return $this;
+    }
+
+    /**
+     * @return string[]|null
+     */
+    public function getSecurityMaintainedVersions(): ?array
+    {
+        return $this->security_maintained_versions;
+    }
+
+    /**
+     * @param string[]|null $security_maintained_versions
+     * @return $this
+     */
+    public function setSecurityMaintainedVersions(?array $security_maintained_versions): self
+    {
+        $this->security_maintained_versions = $security_maintained_versions;
+        return $this;
+    }
+
+    /**
+     * @return string[]|null
+     */
+    public function getFlexSupportedVersions(): ?array
+    {
+        return $this->flex_supported_versions;
+    }
+
+    /**
+     * @param array|null $flex_supported_versions
+     * @return $this
+     */
+    public function setFlexSupportedVersions(?array $flex_supported_versions): self
+    {
+        $this->flex_supported_versions = $flex_supported_versions;
         return $this;
     }
 }
