@@ -23,7 +23,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('cache_path')
                     ->cannotBeEmpty()
                     ->info('Fully qualified path to cache')
-                    ->defaultValue('%kernel.project_dir%/var/cache/bytes_symfony_badge')
+                    ->defaultValue('%kernel.project_dir%/var/cache/%kernel.environment%/bytes_symfony_badge')
                 ->end()
             ->end();
 
