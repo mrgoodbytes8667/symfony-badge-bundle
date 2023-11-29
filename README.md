@@ -10,7 +10,7 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mrgoodbytes8667/symfony-badge-bundle/release.yml?label=stable&logo=github&logoColor=FFF&style=flat)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mrgoodbytes8667/symfony-badge-bundle/run-tests.yml?logo=github&logoColor=FFF&style=flat)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mrgoodbytes8667/symfony-badge-bundle/run-tests-by-version.yml?logo=github&logoColor=FFF&style=flat)
-[![codecov](https://img.shields.io/codecov/c/github/mrgoodbytes8667/symfony-badge-bundle/0.0?logo=codecov&logoColor=FFF&style=flat)](https://codecov.io/gh/mrgoodbytes8667/symfony-badge-bundle)  
+[![codecov](https://img.shields.io/codecov/c/github/mrgoodbytes8667/symfony-badge-bundle/0.2?logo=codecov&logoColor=FFF&style=flat)](https://codecov.io/gh/mrgoodbytes8667/symfony-badge-bundle)  
 A Symfony bundle for testing versions and providing context info
 
 ## Installation
