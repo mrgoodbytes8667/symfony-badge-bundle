@@ -33,7 +33,7 @@
         }
     },
     "conflict": {
-        "phpunit/phpunit": "<9.5 | 9.5.8 | >=10",
+        "phpunit/phpunit": "<9.5 | 9.5.8",
         "symfony/string": "<6.2"
     },
     "autoload": {
